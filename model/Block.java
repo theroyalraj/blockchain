@@ -1,5 +1,6 @@
 package blockchain.model;
 
+import blockchain.Main;
 import blockchain.util.StringUtil;
 
 public class Block {
@@ -8,6 +9,8 @@ public class Block {
     //Transaction transaction;
     private final String prevHash;
     private String hash;
+    private final Long duration;
+    private int magicNumber;
 
 
     public Block(final long id, long timeStamp, final String prevBlockHash) {
@@ -15,7 +18,20 @@ public class Block {
         this.timeStamp = timeStamp;
         this.prevHash = prevBlockHash;
         this.hash = calculateHash(prevBlockHash);
+
+        String starter = "0".repeat(Math.max(0, Main.DIFFICULTY));
+        long start = System.currentTimeMillis();
+
+        magicNumber = 0;
+        this.hash = calculateHash(magicNumber + (id + prevHash + timeStamp));
+        while (!this.hash.startsWith(starter)) {
+            magicNumber++;
+            this.hash = calculateHash(magicNumber + (id + prevHash + timeStamp));
+        }
+        this.duration = System.currentTimeMillis() - start;
+
     }
+
 
     public String calculateHash(String prevBlockHash) {
         return StringUtil.applySha256(id + " " + timeStamp + prevBlockHash);
@@ -33,10 +49,6 @@ public class Block {
         return hash;
     }
 
-    public void setHash(String hash) {
-        this.hash = hash;
-    }
-
     public String getPrevBlockHash() {
         return prevHash;
     }
@@ -44,13 +56,12 @@ public class Block {
     @Override
     public String toString() {
 
-        return "Block:" + "\n" +
-                "Id: " + id + "\n" +
-                "Timestamp: " + timeStamp + "\n" +
-                "Hash of the previous block:" + "\n" +
-                prevHash + "\n" +
-                "Hash of the block:" + "\n" +
-                hash;
+        return "\nBlock:\nId: " + this.id +
+                "\nTimestamp: " + this.timeStamp +
+                "\nMagic number: " + this.magicNumber +
+                "\nHash of the previous block:\n" + this.prevHash +
+                "\nHash of the block:\n" + this.hash +
+                "\nBlock was generating for " + this.duration / 100 + " seconds";
     }
 
 }

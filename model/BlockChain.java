@@ -9,6 +9,7 @@ public class BlockChain {
     private final HashMap<String, Block> blockChainMap = new HashMap<>();
     private Block lastBlock = null;
 
+
     public void addBlock() {
         String prevHash = (lastBlock != null) ? lastBlock.getHash() : FIRST_BLOCK;
         lastBlock = new Block(blockChainMap.size() + 1, System.currentTimeMillis(), prevHash);
@@ -48,6 +49,7 @@ public class BlockChain {
     }
 
     public String toString(int count) {
+
         StringBuilder stringBuilder = new StringBuilder();
         for (Block block : getChain().subList(0, count)) {
             stringBuilder.append(block.toString()).append("\n\n");
